@@ -3,12 +3,15 @@ const textoVezO = document.querySelector('.vez-o');
 const espacos = document.querySelectorAll('.jogo span');
 const resultado = document.querySelector('.resultado');
 const btnReiniciar = document.querySelector('.btn-reiniciar');
-let jogador = 'x';
+let usuario = 'x';
+let pc = 'o';
+let jogadorVez = usuario;
+
 let jogadas = [];
 let formasDeGanhar = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 
 const trocarVez = () =>  {
-  jogador = (jogador === 'x') ? 'o' : 'x';
+  jogadorVez = (jogadorVez === usuario) ? pc : usuario
   textoVezX.classList.toggle('ativo');
   textoVezO.classList.toggle('ativo');
 }
@@ -16,7 +19,7 @@ const trocarVez = () =>  {
 const desabilitarVez = () => {
   textoVezX.classList.remove('ativo');
   textoVezO.classList.remove('ativo');
-  espacos.forEach((espaco) => espaco.removeEventListener('click', addJogada));
+  espacos.forEach((espaco) => espaco.removeEventListener('click', addJogadaUsuario));
 }
 
 const verificarVitoria = () => {
@@ -27,41 +30,64 @@ const verificarVitoria = () => {
   return ganhou;
 }
 
-const verificarFim = () => jogadas.every(jogada => jogada !== null);
+const verificarFim = () => jogadas.every((jogada) => jogada !== null);
 
 const verificarResultado = () => {
   if (verificarVitoria()) {
-    resultado.innerText = `Jogador '${jogador}' venceu!`;
+    resultado.innerText = `Jogador '${jogadorVez}' venceu!`;
     btnReiniciar.classList.add('ativo');
     desabilitarVez();
+    return true;
   } else if (verificarFim()) {
     resultado.innerText = 'Empate';
     btnReiniciar.classList.add('ativo');
     desabilitarVez();
-  } else {
+    return true;
+  }
+  return false;
+}
+
+const sortearPosicaoPc = () => {
+  let posicao = Math.round(Math.random() * (9 - 0) + 0);
+  while (jogadas[posicao] !== null) {
+    posicao = Math.round(Math.random() * (9 - 0) + 0);
+  }
+  return posicao;
+}
+
+const addJogadaPc = () => {
+  posicao = sortearPosicaoPc();
+  espacos[posicao].innerText = pc;
+  jogadas[posicao] = pc;
+  if (!verificarResultado()) {
     trocarVez();
+    espacos.forEach((espaco) => espaco.addEventListener('click', addJogadaUsuario));
   }
 }
 
-const addJogada = (event) => {
+const addJogadaUsuario = (event) => {
   if (event.target.innerText === '') {
-    if (jogador === 'x') event.target.classList.add('x');
-    event.target.innerText = jogador;
+    event.target.classList.add('x');
+    event.target.innerText = usuario;
     espacos.forEach((espaco, index) => {
-      if (espaco.innerText === jogador) jogadas[index] = jogador;
+      if (espaco.innerText === usuario) jogadas[index] = usuario;
       if (!jogadas[index]) jogadas[index] = null;
     });
-    verificarResultado();
-  } 
+    if (!verificarResultado()) {
+      trocarVez();
+      espacos.forEach((espaco) => espaco.removeEventListener('click', addJogadaUsuario));
+      setTimeout(addJogadaPc, 750);
+    }
+  }
 }
 
 const reinciar = () => {
   textoVezX.classList.add('ativo');
-  jogador = 'x';
-  jogadas = []
+  jogadorVez = usuario;
+  jogadas = [];
   espacos.forEach((espaco) => {
     espaco.innerText = '';
-    espaco.addEventListener('click', addJogada);
+    espaco.addEventListener('click', addJogadaUsuario);
     espaco.classList.remove('x');
   });
   resultado.innerText = '';
@@ -69,5 +95,5 @@ const reinciar = () => {
 }
 
 
-espacos.forEach((espaco) => espaco.addEventListener('click', addJogada));
+espacos.forEach((espaco) => espaco.addEventListener('click', addJogadaUsuario));
 btnReiniciar.addEventListener('click', reinciar);
