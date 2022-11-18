@@ -19,7 +19,7 @@ body {
   grid-template-columns: 1fr 1fr;
   margin-bottom: 40px;
   border: 2px solid #FFFFFF;
-  padding: 5px;
+  padding: 7px;
   width: 100%;
   border-radius: 4px;
 }
@@ -32,8 +32,42 @@ body {
   font-weight: bold;
 }
 
-.container-vez span.ativo {
+.container-vez .vez-x.ativo {
   background-color: #FCA311;
+  animation: deslizarDaDireita .2s;
+}
+
+.container-vez .vez-o.ativo {
+  background-color: #FCA311;
+  animation: deslizarDaEsquerda .2s;
+}
+
+@keyframes deslizarDaEsquerda {
+  0% {
+    opacity: 0;
+    transform: translate3d(-30px, 0, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate3d(9px, 0, 0);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes deslizarDaDireita {
+  0% {
+    opacity: 0;
+    transform: translate3d(30px, 0, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate3d(-9px, 0, 0);
+  }
+  100% {
+    transform: none;
+  }
 }
 
 .container-jogo {
@@ -89,10 +123,11 @@ body {
   cursor: pointer;
 }
 
+.btn-reiniciar.ativo {
+  visibility: visible;
+}
+
 .btn-reiniciar:hover {
   filter: brightness(95%);
 }
 
-.btn-reiniciar.ativo {
-  visibility: visible;
-}
